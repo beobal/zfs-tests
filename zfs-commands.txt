@@ -1,0 +1,16 @@
+su
+pfexec format
+zpool create testpool c7d1p0
+zfs allow -s @permset1 create,mount,snapshot,clone,promote,mountpoint,destroy testpool
+zfs allow beobal @permset1 testpool
+
+beobal    
+zfs create testpool/first
+zfs list
+mkdir foo
+zfs set mountpoint=/export/home/beobal/foo testpool/first
+zfs list
+zfs destroy testpool/first
+zfs list
+
+
