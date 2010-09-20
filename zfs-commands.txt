@@ -11,7 +11,14 @@ mkdir foo
 zfs set mountpoint=/export/home/beobal/foo testpool/first
 zfs mount testpool/first
 zfs list -t all
-zfs destroy testpool/first
+
+zfs snapshot testpool/first@now
+zfs clone testpool/first@now testpool/cloned
+zfs set mountpoint=/export/home/beobal/bar testpool/cloned
+zfs mount testpool/first
+zfs list -t all
+
+zfs destroy -rR testpool/first
 zfs list -t all
 
 
