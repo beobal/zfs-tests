@@ -6,11 +6,12 @@ zfs allow beobal @permset1 testpool
 
 beobal    
 zfs create testpool/first
-zfs list
+zfs list -t all
 mkdir foo
 zfs set mountpoint=/export/home/beobal/foo testpool/first
-zfs list
+zfs mount testpool/first
+zfs list -t all
 zfs destroy testpool/first
-zfs list
+zfs list -t all
 
 
