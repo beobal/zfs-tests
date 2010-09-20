@@ -14,9 +14,24 @@
         </layout>
     </appender>
 
+    <appender name="fileout" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="/tmp/zfs-tests.log"/>
+        <param name="MaxFileSize" value="100MB"/>
+        <param name="MaxBackupIndex" value="30"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{ISO8601} -%5p %-25c{1} :%t:%m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender"> 
+        <layout class="org.apache.log4j.PatternLayout"> 
+            <param name="ConversionPattern" value="%d{ISO8601} -%5p %-25c{1} :%t:%m%n"/>
+        </layout>
+    </appender>
+
     <root> 
         <level value="INFO"/>
-        <appender-ref ref="stdout" /> 
+        <appender-ref ref="fileout" /> 
     </root> 
 
 </log4j:configuration>

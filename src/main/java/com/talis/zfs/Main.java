@@ -31,16 +31,17 @@ public class Main {
 		lock = new ReentrantLock();
 		sequence = new AtomicInteger(0);
 		 zfs = new LibZFS();
-		
+				
 		LOG.info("Creating zfs filesystem named \"beobal\" in pool \"testpool\"");
 		fileSystem = (ZFSFileSystem)zfs.create("testpool/beobal", ZFSType.FILESYSTEM, null);
 		LOG.info("Created zfs filesystem");
 				
-		mountpoint = new File("/export/home/beobal/zfs-test");
+		mountpoint = new File("/var/data/beobal");
 		mountpoint.mkdirs();
 		
 		LOG.info("Mounting filesystem at " + mountpoint.getAbsolutePath());
 		fileSystem.setMountPoint(mountpoint);
+		fileSystem.mount();
 		LOG.info("Mounted zfs filesystem");
 		
 		datafile = new File(mountpoint, "data.txt");
@@ -61,9 +62,9 @@ public class Main {
 		lock.lock();
 		LOG.info("Obtained lock");
 		try{
-			int seq = sequence.get();
+			int seq = sequence.get() - 1;
 			LOG.info("Creating zfs snapshot. Sequence is " + seq);
-			ZFSSnapshot snapshot = (ZFSSnapshot)zfs.create("testpool/beobal@" + seq, ZFSType.SNAPSHOT, null);
+			fileSystem.createSnapshot("" + seq);
 			LOG.info("Created zfs snapshot");
 		}finally{
 			LOG.info("Releasing lock");
@@ -94,24 +95,27 @@ public class Main {
 		}
 	}
 	
+	public void listSnapshots(){
+		for (ZFSSnapshot snapshot : fileSystem.snapshots()){
+			LOG.info("SNAPSHOT: " + snapshot.getName());
+			System.out.println(snapshot.getName());
+		}
+	}
+	
+	
 	public static void main(String[] args) throws IOException{
 		LOG.info("Starting test");
 		Main main = new Main();
-		
-		main.doUpdate();
-		main.doUpdate();
-		main.doUpdate();
-		main.doSnapshot();
-		System.exit(0);
-		
-		System.out.print("Enter u to update, s to snapshot, or any other key to exit");
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		while (true){
+			System.out.print("Enter u to update, s to snapshot, l to list snapshots, or any other key to exit: ");
 			String input = reader.readLine();
 			if (input.equals("u")){
 				main.doUpdate();		  
 			}else if( input.equals("s")){
 				main.doSnapshot();
+			}else if( input.equals("l")){
+				main.listSnapshots();
 			}else{
 				System.out.println("Exiting");
 				System.exit(0);
